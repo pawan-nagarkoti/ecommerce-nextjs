@@ -4,7 +4,6 @@ export default function Color({ label = "" }) {
   return (
     <>
       <Label htmlFor="terms">{label}</Label>
-      <div>Color</div>
     </>
   );
 }

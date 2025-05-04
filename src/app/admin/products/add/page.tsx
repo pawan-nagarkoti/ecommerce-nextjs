@@ -4,6 +4,7 @@ import { CustomSelect } from "@/components/forms/CustomSelect";
 import CustomSize from "@/components/forms/CustomSize";
 import { Description } from "@/components/forms/Description";
 import { Button } from "@/components/ui/button";
+import { sizeData } from "@/constant";
 
 export default function page() {
   return (
@@ -17,7 +18,7 @@ export default function page() {
           <CustomSelect label="Category" />
           <CustomSelect label="Gender" />
 
-          <CustomSize label="Size" />
+          <CustomSize label="Size" data={sizeData} />
           <Color label="Color" />
 
           <CustomInput label="Price" placeholder="Product Price" />
