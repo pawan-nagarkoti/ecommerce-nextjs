@@ -43,7 +43,7 @@ const data = {
   navMain: [
     {
       title: "Products",
-      url: "#",
+      url: "/admin/products/add",
       icon: LayoutDashboardIcon,
     },
     {
