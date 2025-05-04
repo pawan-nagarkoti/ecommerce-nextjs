@@ -35,3 +35,31 @@ export const sizeData = [
     isChecked: false,
   },
 ];
+
+export const productColor = [
+  {
+    id: 1,
+    name: "red",
+    isChecked: false,
+  },
+  {
+    id: 2,
+    name: "yellow",
+    isChecked: false,
+  },
+  {
+    id: 3,
+    name: "green",
+    isChecked: false,
+  },
+  {
+    id: 4,
+    name: "pink",
+    isChecked: false,
+  },
+  {
+    id: 5,
+    name: "orange",
+    isChecked: false,
+  },
+];
