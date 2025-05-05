@@ -13,9 +13,10 @@ type colorType = {
 interface colorProps {
   label?: string;
   data: colorType[];
+  setHasProductColor: any;
 }
 
-export default function Color({ label = "", data = [] }: colorProps) {
+export default function Color({ label = "", data = [], setHasProductColor }: colorProps) {
   const [color, setColor] = useState<colorType[]>([]);
 
   useEffect(() => {
@@ -30,11 +31,10 @@ export default function Color({ label = "", data = [] }: colorProps) {
   }, []);
 
   const handleSelectedColor = (selectedColor: colorType) => {
-    const updated = color.map((v) =>
-      v.id === selectedColor.id ? { ...v, isChecked: !v.isChecked } : v
-    );
+    const updated = color.map((v) => (v.id === selectedColor.id ? { ...v, isChecked: !v.isChecked } : v));
     setColor(updated);
     Cookies.set("colorData", JSON.stringify(updated));
+    setHasProductColor(updated); // selected color data lifting
   };
 
   const colorClassMap: Record<string, string> = {
@@ -52,9 +52,7 @@ export default function Color({ label = "", data = [] }: colorProps) {
         {color.map((v) => (
           <p
             key={v.id}
-            className={`border px-3 py-2 text-sm rounded-sm cursor-pointer ${
-              v.isChecked ? `${colorClassMap[v.name]} text-white` : ""
-            }`}
+            className={`border px-3 py-2 text-sm rounded-sm cursor-pointer ${v.isChecked ? `${colorClassMap[v.name]} text-white` : ""}`}
             onClick={() => handleSelectedColor(v)}
           >
             {v.name}

@@ -12,9 +12,10 @@ type SizeItem = {
 interface sizeProps {
   label?: String;
   data: SizeItem[];
+  setHasProductSize: any;
 }
 
-export default function CustomSize({ label = "", data = [] }: sizeProps) {
+export default function CustomSize({ label = "", data = [], setHasProductSize }: sizeProps) {
   const [sizeItem, setSizeItem] = useState<SizeItem[]>([]);
   useEffect(() => {
     const stored = Cookies.get("productSize");
@@ -28,14 +29,11 @@ export default function CustomSize({ label = "", data = [] }: sizeProps) {
   }, []);
 
   const handleSizeItem = (clickedItem: SizeItem) => {
-    console.log(clickedItem);
-    const updated = sizeItem?.map((item) =>
-      item.id === clickedItem.id
-        ? { ...item, isChecked: !item.isChecked }
-        : item
-    );
+    const updated = sizeItem?.map((item) => (item.id === clickedItem.id ? { ...item, isChecked: !item.isChecked } : item));
     setSizeItem(updated);
     Cookies.set("productSize", JSON.stringify(updated));
+
+    setHasProductSize(updated); // product size data lifting
   };
 
   return (
@@ -47,9 +45,7 @@ export default function CustomSize({ label = "", data = [] }: sizeProps) {
           sizeItem?.map((v, i) => (
             <p
               key={i}
-              className={`border px-3 py-2 text-sm rounded-sm cursor-pointer ${
-                v?.isChecked ? "bg-black text-white" : ""
-              }`}
+              className={`border px-3 py-2 text-sm rounded-sm cursor-pointer ${v?.isChecked ? "bg-black text-white" : ""}`}
               onClick={() => handleSizeItem(v)}
             >
               {v?.name}
