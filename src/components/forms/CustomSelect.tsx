@@ -1,21 +1,19 @@
 import * as React from "react";
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
-export function CustomSelect({ label = "" }) {
+interface selectProps {
+  label: string;
+  selectedValue: any;
+  value: string;
+}
+
+export function CustomSelect({ label = "", value, selectedValue }: selectProps) {
   return (
     <>
       <Label htmlFor="terms">{label}</Label>
-      <Select>
+      <Select value={value} onValueChange={selectedValue}>
         <SelectTrigger className="my-3 w-full">
           <SelectValue placeholder="Select a fruit" />
         </SelectTrigger>

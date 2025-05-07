@@ -13,9 +13,10 @@ interface sizeProps {
   label?: String;
   data: SizeItem[];
   setHasProductSize: any;
+  changesDetectFromCookies: boolean;
 }
 
-export default function CustomSize({ label = "", data = [], setHasProductSize }: sizeProps) {
+export default function CustomSize({ label = "", data = [], setHasProductSize, changesDetectFromCookies }: sizeProps) {
   const [sizeItem, setSizeItem] = useState<SizeItem[]>([]);
   useEffect(() => {
     const stored = Cookies.get("productSize");
@@ -26,7 +27,7 @@ export default function CustomSize({ label = "", data = [], setHasProductSize }:
       setSizeItem(data);
       Cookies.set("productSize", JSON.stringify(data));
     }
-  }, []);
+  }, [changesDetectFromCookies]);
 
   const handleSizeItem = (clickedItem: SizeItem) => {
     const updated = sizeItem?.map((item) => (item.id === clickedItem.id ? { ...item, isChecked: !item.isChecked } : item));

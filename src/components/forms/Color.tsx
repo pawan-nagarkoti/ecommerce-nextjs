@@ -14,9 +14,10 @@ interface colorProps {
   label?: string;
   data: colorType[];
   setHasProductColor: any;
+  changesDetectFromCookies: boolean;
 }
 
-export default function Color({ label = "", data = [], setHasProductColor }: colorProps) {
+export default function Color({ label = "", data = [], setHasProductColor, changesDetectFromCookies }: colorProps) {
   const [color, setColor] = useState<colorType[]>([]);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function Color({ label = "", data = [], setHasProductColor }: col
       setColor(data);
       Cookies.set("colorData", JSON.stringify(data));
     }
-  }, []);
+  }, [changesDetectFromCookies]);
 
   const handleSelectedColor = (selectedColor: colorType) => {
     const updated = color.map((v) => (v.id === selectedColor.id ? { ...v, isChecked: !v.isChecked } : v));
