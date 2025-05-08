@@ -6,18 +6,21 @@ import { CustomSelect } from "@/components/forms/CustomSelect";
 import CustomSize from "@/components/forms/CustomSize";
 import { Description } from "@/components/forms/Description";
 import { Button } from "@/components/ui/button";
-import { productColor, sizeData } from "@/constant";
+import { brands, categories, gender, productColor, sizeData } from "@/constant";
 import { useState } from "react";
 import Cookies from "js-cookie";
+import { addProduct } from "@/actions/product";
+import { toast } from "sonner";
 
 export default function page() {
-  const [hasProductSize, setHasProductSize] = useState("");
-  const [hasProductColor, setHasProductColor] = useState("");
+  const [hasProductSize, setHasProductSize] = useState<any>([]);
+  const [hasProductColor, setHasProductColor] = useState<any>([]);
   const [selectedBrandValue, setSelectedBrandValue] = useState("");
   const [categoryValue, setSelectedCategoryValue] = useState("");
   const [genderValue, setSelectedGenderValue] = useState("");
   const [hasChangesOnColorData, setHasChangesOnColorData] = useState(false);
   const [hasChangesOnProductPrizeData, setHasChangesOnProductPrize] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [productData, setProductData] = useState({
     image: "",
@@ -37,52 +40,65 @@ export default function page() {
     }
   };
 
-  const handleSubmitProductData = (e: any) => {
+  const handleSubmitProductData = async (e: any) => {
     e.preventDefault();
 
-    const productValues = {
-      image: productData?.image,
-      name: productData?.name,
-      brand: selectedBrandValue,
-      description: productData?.description,
-      category: categoryValue,
-      gender: genderValue,
-      price: hasProductSize,
-      color: hasProductColor,
-      stock: productData?.stock,
-    };
+    try {
+      const products = new FormData();
 
-    console.log(productValues);
+      products.append("image", productData?.image);
+      products.append("name", productData?.name);
+      products.append("brand", selectedBrandValue);
+      products.append("description", productData?.description);
+      products.append("category", categoryValue);
+      products.append("gender", genderValue);
+      products.append("price", productData?.price);
+      products.append("color", JSON.stringify(hasProductColor?.filter((v: any) => v.isChecked)));
+      products.append("size", JSON.stringify(hasProductSize?.filter((v: any) => v.isChecked)));
+      products.append("stock", productData?.stock);
 
-    setSelectedBrandValue("");
-    setSelectedCategoryValue("");
-    setSelectedGenderValue("");
+      setIsLoading(true);
+      const res = await addProduct(products);
+      console.log("res", res);
+      if (res?.success) {
+        toast.success(res.message);
+      }
 
-    setProductData({
-      image: "",
-      name: "",
-      description: "",
-      color: "",
-      price: "",
-      stock: "",
-    });
+      setSelectedBrandValue("");
+      setSelectedCategoryValue("");
+      setSelectedGenderValue("");
 
-    // get color data from cookies and if i have selected any color code then unselect the color code after submit the form
-    let getColorDataFromCookies = Cookies.get("colorData");
-    if (getColorDataFromCookies) {
-      const data = JSON.parse(getColorDataFromCookies);
-      const updatedColorCookie = data.map((v: any) => (v.isChecked === true ? { ...v, isChecked: false } : v));
-      Cookies.set("colorData", JSON.stringify(updatedColorCookie));
-      setHasChangesOnColorData((prve) => !prve);
-    }
+      setProductData({
+        image: "",
+        name: "",
+        description: "",
+        color: "",
+        price: "",
+        stock: "",
+      });
 
-    // get product size form cookies and if i have selected any size then unselect after submit the form
-    let getProductSizeFromCookies = Cookies.get("productSize");
-    if (getProductSizeFromCookies) {
-      const data = JSON.parse(getProductSizeFromCookies);
-      const updatedProductSizeCookie = data.map((v: any) => (v.isChecked === true ? { ...v, isChecked: false } : v));
-      Cookies.set("productSize", JSON.stringify(updatedProductSizeCookie));
-      setHasChangesOnProductPrize((prve) => !prve);
+      // get color data from cookies and if i have selected any color code then unselect the color code after submit the form
+      let getColorDataFromCookies = Cookies.get("colorData");
+      if (getColorDataFromCookies) {
+        const data = JSON.parse(getColorDataFromCookies);
+        const updatedColorCookie = data.map((v: any) => (v.isChecked === true ? { ...v, isChecked: false } : v));
+        Cookies.set("colorData", JSON.stringify(updatedColorCookie));
+        setHasChangesOnColorData((prve) => !prve);
+      }
+
+      // get product size form cookies and if i have selected any size then unselect after submit the form
+      let getProductSizeFromCookies = Cookies.get("productSize");
+      if (getProductSizeFromCookies) {
+        const data = JSON.parse(getProductSizeFromCookies);
+        const updatedProductSizeCookie = data.map((v: any) => (v.isChecked === true ? { ...v, isChecked: false } : v));
+        Cookies.set("productSize", JSON.stringify(updatedProductSizeCookie));
+        setHasChangesOnProductPrize((prve) => !prve);
+      }
+    } catch (e: any) {
+      console.log("Product error", e.message);
+      toast.error(e.message);
+    } finally {
+      setIsLoading(false);
     }
   };
   return (
@@ -97,7 +113,7 @@ export default function page() {
           )}
 
           <CustomInput label="Name" placeholder="Product name" name="name" value={productData?.name} onChange={(e: any) => handleProductChanges(e)} />
-          <CustomSelect label="Brand" value={selectedBrandValue} selectedValue={setSelectedBrandValue} />
+          <CustomSelect label="Brand" placeholder="brand" value={selectedBrandValue} selectedValue={setSelectedBrandValue} data={brands} />
           <Description
             label="Description"
             placeholder="Product description"
@@ -105,8 +121,8 @@ export default function page() {
             value={productData?.description}
             onChange={(e) => handleProductChanges(e)}
           />
-          <CustomSelect label="Category" value={categoryValue} selectedValue={setSelectedCategoryValue} />
-          <CustomSelect label="Gender" value={genderValue} selectedValue={setSelectedGenderValue} />
+          <CustomSelect label="Category" placeholder="category" value={categoryValue} selectedValue={setSelectedCategoryValue} data={categories} />
+          <CustomSelect label="Gender" placeholder="gender" value={genderValue} selectedValue={setSelectedGenderValue} data={gender} />
 
           <CustomSize label="Size" data={sizeData} setHasProductSize={setHasProductSize} changesDetectFromCookies={hasChangesOnProductPrizeData} />
           <Color label="Color" data={productColor} setHasProductColor={setHasProductColor} changesDetectFromCookies={hasChangesOnColorData} />
@@ -115,7 +131,9 @@ export default function page() {
           <CustomInput label="Stock" placeholder="Stock" name="stock" value={productData?.stock} onChange={(e: any) => handleProductChanges(e)} />
 
           <div className="text-center my-10">
-            <Button type="submit">Button</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? <p>Loading...</p> : "submit"}
+            </Button>
           </div>
         </form>
       </div>

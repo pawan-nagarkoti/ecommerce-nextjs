@@ -40,7 +40,7 @@ export default function CustomSize({ label = "", data = [], setHasProductSize, c
   return (
     <>
       {label && <Label htmlFor="terms">{label}</Label>}
-      <div className="flex gap-3 my-3">
+      <div className="flex gap-3 my-3 flex-wrap">
         {sizeItem &&
           sizeItem.length > 0 &&
           sizeItem?.map((v, i) => (

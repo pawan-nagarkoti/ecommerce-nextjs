@@ -6,7 +6,7 @@ const connectToDB = async () => {
   mongoose
     .connect(connectionUrl)
     .then(() => console.log("blog database connection is successfull"))
-    .catch((error) => console.log(error));
+    .catch((error) => console.log("error while connection mongo", error));
 };
 
 export default connectToDB;

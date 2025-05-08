@@ -49,7 +49,7 @@ export default function Color({ label = "", data = [], setHasProductColor, chang
   return (
     <>
       {label && <Label htmlFor="terms">{label}</Label>}
-      <div className="flex gap-3 my-3">
+      <div className="flex gap-3 my-3 flex-wrap">
         {color.map((v) => (
           <p
             key={v.id}
