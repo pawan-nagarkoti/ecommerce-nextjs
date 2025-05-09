@@ -10,11 +10,13 @@ interface inputProps {
   placeholder?: string;
   name?: string;
   value?: string | number;
+  multiple?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function CustomInput({
   type = "text",
+  multiple = false,
   label = "Label",
   placeholder = "placeholder",
   name = "",
@@ -34,6 +36,7 @@ export default function CustomInput({
         className="my-3"
         onChange={onChange}
         {...(type !== "file" && value !== undefined ? { value } : {})} // when we have both input file and input text field so its check if we have input text then set value otherwise {}
+        {...(multiple ? { multiple: true } : {})} // if we have multiple attriebute then its true otherwise not work
       />
     </>
   );

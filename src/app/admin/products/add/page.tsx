@@ -11,6 +11,7 @@ import { useState } from "react";
 import Cookies from "js-cookie";
 import { addProduct } from "@/actions/product";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function page() {
   const [hasProductSize, setHasProductSize] = useState<any>([]);
@@ -21,9 +22,11 @@ export default function page() {
   const [hasChangesOnColorData, setHasChangesOnColorData] = useState(false);
   const [hasChangesOnProductPrizeData, setHasChangesOnProductPrize] = useState(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [previews, setPreviews] = useState<string[]>([]); // preview images state
+  const router = useRouter();
 
   const [productData, setProductData] = useState({
-    image: "",
+    image: [],
     name: "",
     description: "",
     color: "",
@@ -33,7 +36,13 @@ export default function page() {
 
   const handleProductChanges = (e: any, file?: string | undefined) => {
     if (file) {
-      setProductData((productData) => ({ ...productData, [e.target.name]: e.target.files[0] }));
+      const files = Array.from(e.target.files || []);
+
+      setProductData((productData) => ({ ...productData, [e.target.name]: files })); // hanlde multiple files
+
+      // Generate new preview URLs and append to existing previews
+      const newPreviews = files.map((file: any) => URL.createObjectURL(file));
+      setPreviews((prev) => [...prev, ...newPreviews]); // concatenate with older images
     } else {
       const { name, value } = e.target;
       setProductData((productData) => ({ ...productData, [name]: value }));
@@ -46,7 +55,11 @@ export default function page() {
     try {
       const products = new FormData();
 
-      products.append("image", productData?.image);
+      for (const file of productData?.image) {
+        // get images and loop over here
+        products.append("image", file);
+      }
+
       products.append("name", productData?.name);
       products.append("brand", selectedBrandValue);
       products.append("description", productData?.description);
@@ -59,9 +72,10 @@ export default function page() {
 
       setIsLoading(true);
       const res = await addProduct(products);
-      console.log("res", res);
+
       if (res?.success) {
         toast.success(res.message);
+        router.push("/admin/products/list");
       }
 
       setSelectedBrandValue("");
@@ -69,7 +83,7 @@ export default function page() {
       setSelectedGenderValue("");
 
       setProductData({
-        image: "",
+        image: [],
         name: "",
         description: "",
         color: "",
@@ -105,11 +119,14 @@ export default function page() {
     <>
       <div className="container px-5">
         <form onSubmit={handleSubmitProductData}>
-          <CustomInput type="file" label="Product Image" name="image" onChange={(e: any) => handleProductChanges(e, "file")} />
-          {productData.image && typeof productData.image === "object" && (
-            <>
-              <img src={URL.createObjectURL(productData.image)} alt="Preview" className="mt-3 w-32 h-32 object-cover rounded-lg border" />
-            </>
+          <CustomInput type="file" multiple={true} label="Product Image" name="image" onChange={(e: any) => handleProductChanges(e, "file")} />
+          {/* preview images */}
+          {previews && previews.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-4">
+              {previews.map((src, idx) => (
+                <img key={idx} src={src} alt={`preview-${idx}`} className="w-28 rounded" />
+              ))}
+            </div>
           )}
 
           <CustomInput label="Name" placeholder="Product name" name="name" value={productData?.name} onChange={(e: any) => handleProductChanges(e)} />

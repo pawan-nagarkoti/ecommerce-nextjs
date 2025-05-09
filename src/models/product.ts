@@ -2,34 +2,36 @@ import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
-    image: {
-      type: String,
-      // required: true,
-    },
+    image: [
+      {
+        _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
+        url: { type: String },
+      },
+    ],
     name: {
       type: String,
-      // required: true,
+      required: true,
     },
     brand: {
       type: String,
-      // required: true,
+      required: true,
     },
     description: {
       type: String,
-      // required: true,
+      required: true,
     },
     category: {
       type: String,
-      // required: true,
+      required: true,
     },
     gender: {
       type: String,
       enum: ["male", "female", "unisex"],
-      // required: true,
+      required: true,
     },
     price: {
       type: Number,
-      // required: true,
+      required: true,
     },
     color: [
       {
@@ -48,7 +50,7 @@ const productSchema = new mongoose.Schema(
 
     stock: {
       type: Number,
-      // required: true,
+      required: true,
     },
   },
   { timestamps: true }
